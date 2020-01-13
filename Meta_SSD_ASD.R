@@ -19,10 +19,14 @@ eff_low <- escalc(measure="SMD", n1i=SSD.N, n2i=ASD.N, m1i=O1.SSD.Mean, m2i=O1.A
 # fit model
 # Restricted maximum-likelihood (REML) estimation is used by default when estimating τ2 
 # the REML estimator is approximately unbiased and quite efficient; see Viechtbauer 2005)
-fit_low <- rma(yi=eff_size, vi=var, data = eff_low)
+fit_low <- rma(yi=eff_size, vi=var, data=eff_low)
 
-# permutation testing (non-normality of observed effects)
-fit_low_p <- permutest(fit_low, exact=T) # still sig
+# with pub year as moderator
+fit_low_yr <- rma(yi=eff_size, vi=var, mods=meta_data_low$Year, data=eff_low)
+
+#setseed=999
+#permutation testing (non-normality of observed effects)
+#fit_low_p <- permutest(fit_low, exact=T) # still sig
 
 # get confidence intervals
 confint(fit_low)
@@ -62,8 +66,8 @@ eff_hi <- escalc(measure="SMD", n1i=SSD.N, n2i=ASD.N, m1i=O1.SSD.Mean, m2i=O1.AS
 fit_hi <- rma(yi=eff_size, vi=var, data = eff_hi)
 
 # permutation testing
-setseed=999
-fit_hi_p <- permutest(fit_hi, exact=F) # still non-sig
+#setseed=999
+#fit_hi_p <- permutest(fit_hi, exact=F) # still non-sig
 
 # get confidence intervals
 confint(fit_hi)
@@ -100,8 +104,8 @@ eff_rmet <- escalc(measure="SMD", n1i=SSD.N, n2i=ASD.N, m1i=O1.SSD.Mean, m2i=O1.
 fit_rmet <- rma(yi=eff_size, vi=var, data = eff_rmet)
 
 # permutation testing
-setseed=999
-fit_rmet_p <- permutest(fit_rmet, exact=F) # still non-sig
+#setseed=999
+#fit_rmet_p <- permutest(fit_rmet, exact=F) # still non-sig
 
 # get confidence intervals
 confint(fit_rmet)
