@@ -4,9 +4,9 @@ library(plyr)
 library(metaviz)
 
 # read in data for soc cog dimensions
-low_meta_data <- read.csv("/projects/loliver/Systematic_Review/Lower_Data_2020-01-09.csv")
-hi_meta_data <- read.csv("/projects/loliver/Systematic_Review/Higher_Data_2020-01-09.csv")
-rmet_meta_data <- read.csv("/projects/loliver/Systematic_Review/RMET_Data_2020-01-09.csv")
+low_meta_data <- read.csv("/projects/loliver/Systematic_Review/Lower_Data_2020-02-24.csv")
+hi_meta_data <- read.csv("/projects/loliver/Systematic_Review/Higher_Data_2020-02-24.csv")
+rmet_meta_data <- read.csv("/projects/loliver/Systematic_Review/RMET_Data_2020-02-24.csv")
 
 # calculate individual effect sizes
 # specifically, calculate standardized mean effect sizes (Hedge's g) from the means, SDs, and Ns for the SSD and ASD groups for each paper
