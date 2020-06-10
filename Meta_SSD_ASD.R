@@ -28,32 +28,11 @@ eff_low$ed_diff <- escalc(measure="SMD", n1i=SSD.N, n2i=ASD.N, m1i=SSD.Ed.Mean, 
 eff_low$Diff.on.Antipsych <- (eff_low$SSD.Prop.on.Antipsych)-(eff_low$ASD.Prop.on.Antipsych)
 eff_low$Diff.Male <- (eff_low$SSD.Prop.Male)-(eff_low$ASD.Prop.Male)
 
-
 # fit model (also sig with RMET studies included, including with perm testing)
 # Restricted maximum-likelihood (REML) estimation is used by default when estimating τ2 
 # the REML estimator is approximately unbiased and quite efficient; see Viechtbauer 2005; Veroniki et al., 2015)
 # DL (adequate and most commonly used) and PM (most recommended by Veroniki et al.) estimators produce extremely similar results 
 fit_low <- rma(yi=eff_size, vi=var, data=eff_low, method="REML")
-
-# with pub year as moderator - sig (accounts for 70% of heterogeneity)
-fit_low_yr <- rma(yi=eff_size, vi=var, mods=Year, data=eff_low)
-
-# with QA Score and age as moderators (more exploratory) 
-# did check age and QA alone and NS, as with together
-fit_low_contmods <- rma(yi=eff_size, vi=var, mods=cbind(QA.Score,age_diff), data=eff_low)
-
-# exploratory - prop on antipsychotics - NS
-fit_low_med <- rma(yi=eff_size, vi=var, mods=Diff.on.Antipsych, data=eff_low)
-
-# exploratory - IQ (full-scale or WRAT) k = 4 (don't use)
-fit_low_IQ <- rma(yi=eff_size, vi=var, mods=IQ_diff, data=eff_low[eff_low$IQ.Type=="Full-scale"|eff_low$IQ.Type=="WRAT",])
-
-# exploratory - prop male
-fit_low_sex <- rma(yi=eff_size, vi=var, mods=Diff.Male, data=eff_low)
-
-# sensitivity analysis - data availability - NS but use
-fit_low_avail <- rma(yi=eff_size, vi=var, mods=~factor(Data.Availability), data=eff_low)
-
 
 #setseed=999
 #permutation testing (non-normality of observed effects)
@@ -86,8 +65,39 @@ trimfill(fit_low) # if sig, can generate funnel plot of this model object
 inf_low <- influence(fit_low)
 plot(inf_low, plotdfb = TRUE)
 
+# look at externally standardized residuals in particular
+rstudent(fit_low)
+
 # can also run leave one out analysis - stil sig with Bolte & Poustka out
 leave1out(fit_low)
+
+
+# moderator analyses
+# with pub year as moderator - sig (accounts for 70% of heterogeneity)
+fit_low_yr <- rma(yi=eff_size, vi=var, mods=Year, data=eff_low)
+
+# with pub year and age as moderators - sig (accounts for 60% of heterogeneity)
+fit_low_yrage <- rma(yi=eff_size, vi=var, mods=cbind(Year,age_diff), data=eff_low)
+
+# with QA Score and age as moderators
+# did check age and QA alone and NS, as with together
+fit_low_qaage <- rma(yi=eff_size, vi=var, mods=cbind(QA.Score,age_diff), data=eff_low)
+
+# with QA Score as moderator 
+fit_low_qa <- rma(yi=eff_size, vi=var, mods=QA.Score, data=eff_low)
+
+# exploratory - prop on antipsychotics - NS
+fit_low_med <- rma(yi=eff_size, vi=var, mods=Diff.on.Antipsych, data=eff_low)
+
+# exploratory - IQ (full-scale or WRAT) k = 4 (don't use)
+fit_low_IQ <- rma(yi=eff_size, vi=var, mods=IQ_diff, data=eff_low[eff_low$IQ.Type=="Full-scale"|eff_low$IQ.Type=="WRAT",])
+
+# exploratory - prop male
+fit_low_sex <- rma(yi=eff_size, vi=var, mods=Diff.Male, data=eff_low)
+
+
+# sensitivity analyses - data availability - NS but use
+fit_low_avail <- rma(yi=eff_size, vi=var, mods=~factor(Data.Availability), data=eff_low)
 
 
 # higher-level soc cog
