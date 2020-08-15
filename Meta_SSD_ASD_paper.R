@@ -5,8 +5,8 @@ library(metaviz)
 
 # read in data for soc cog dimensions
 low_meta_data <- read.csv("/projects/loliver/Systematic_Review/Lower_Data_2020-02-24.csv")
-hi_meta_data <- read.csv("/projects/loliver/Systematic_Review/Higher_Data_2020-02-24.csv")
-rmet_meta_data <- read.csv("/projects/loliver/Systematic_Review/RMET_Data_2020-02-24.csv")
+hi_meta_data <- read.csv("/projects/loliver/Systematic_Review/Higher_Data_2020-08-05.csv")
+rmet_meta_data <- read.csv("/projects/loliver/Systematic_Review/RMET_Data_2020-08-05.csv")
 
 # calculate individual effect sizes
 # specifically, calculate standardized mean effect sizes (Hedge's g) from the means, SDs, and Ns for the SSD and ASD groups for each paper
@@ -45,8 +45,8 @@ confint(fit_low)
 # forest plot (effects) # 600 width
 forest(fit_low, slab = paste(eff_low$Author, eff_low$Year, sep = ", "), xlab="Hedges' g",
          mlab="Summary (Random-Effects)", order="obs")
-text(-5, 18, "Author(s) and Year",  pos=4)
-text(6, 18, "Hedges' g [95% CI]", pos=2)
+text(-3.6, 18.6, "Author(s) and Year",  pos=1)
+text(4.5, 18.6, "Hedges' g [95% CI]", pos=1)
 
 # if want to add Ns to forest plot
 #study_table=eff_low[,c("Author","Task.SSD.N","Task.ASD.N")],table_headers=c("Author","N SSD", "N ASD"))
@@ -81,7 +81,7 @@ confint(fit_low_out)
 # forest plot
 forest(fit_low_out, slab = paste(eff_low_out$Author, eff_low_out$Year, sep = ", "), xlab="Hedges' g",
        mlab="Summary (Random-Effects)", order="obs")
-text(-3, 17.5, "Author(s) and Year",  pos=1)
+text(-3.35, 17.5, "Author(s) and Year",  pos=1)
 text(4, 17.5, "Hedges' g [95% CI]", pos=1)
 
 # Q-Q plot to check normality
@@ -129,6 +129,8 @@ fit_low_med <- rma(yi=eff_size, vi=var, mods=Diff.on.Antipsych, data=eff_low_out
 # exploratory - prop male (don't use)
 fit_low_sex <- rma(yi=eff_size, vi=var, mods=Diff.Male, data=eff_low)
 fit_low_sex_out <- rma(yi=eff_size, vi=var, mods=Diff.Male, data=eff_low_out)
+
+# exploratory - IQ (2 full-scale, 2 WRAT so N too small)
 
 
 # sensitivity analyses - data availability
@@ -182,8 +184,8 @@ confint(fit_hi)
 # forest plot (effects)
 forest(fit_hi, slab = paste(eff_hi$Author, eff_hi$Year, sep = ", "), xlab="Hedges' g",
        mlab="Summary (Random-Effects)", order="obs")
-text(-10.5, 19.75, "Author(s) and Year",  pos=1)
-text(6.75, 19.75, "Hedges' g [95% CI]", pos=1)
+text(-10.5, 20.8, "Author(s) and Year",  pos=1)
+text(6.75, 20.8, "Hedges' g [95% CI]", pos=1)
 
 # outlier and influential cases check
 inf_hi <- influence(fit_hi)
@@ -194,7 +196,7 @@ rstudent(fit_hi)
 
 # run leave one out analysis
 fit_hi_leave1 <- leave1out(fit_hi)
-#write.csv(fit_hi_leave1, file="/projects/loliver/Systematic_Review/Paper/Tables/fit_hi_leave1.csv",row.names=F)
+#write.csv(fit_hi_leave1, file="/projects/loliver/Systematic_Review/Paper/Tables/fit_hi_leave1_update.csv",row.names=F)
 
 # generate GOSH plot - cool visualization for outliers, but takes forever 
 #fit_hi_gosh <- gosh(fit_hi)
@@ -210,8 +212,8 @@ confint(fit_hi_out)
 # forest plot (effects)
 forest(fit_hi_out, slab = paste(eff_hi_out$Author, eff_hi_out$Year, sep = ", "), xlab="Hedges' g",
        mlab="Summary (Random-Effects)", order="obs")
-text(-3.75, 18.5, "Author(s) and Year",  pos=1)
-text(3.75, 18.5, "Hedges' g [95% CI]", pos=1)
+text(-3.85, 19.7, "Author(s) and Year",  pos=1)
+text(3.75, 19.7, "Hedges' g [95% CI]", pos=1)
 
 # Q-Q plot to check normality
 qqnorm(fit_hi_out,label="out",main = "Random-Effects Model")
@@ -277,6 +279,9 @@ plot(eff_hi$Diff.on.Antipsych,eff_hi$eff_size,pch=19,cex=size,
 abline(h=0,lty="dotted")
 abline(lm(eff_hi$eff_size~eff_hi$Diff.on.Antipsych))
 
+# Exploratory for revision - full-scale IQ
+fit_hi_IQ <- rma(yi=eff_size, vi=var, mods=IQ_diff, data=eff_hi_out[eff_hi_out$IQ.Type=="Full-scale",])
+
 
 # sensitivity analyses - data availability
 fit_hi_sens_avail <- rma(yi=eff_size, vi=var, data=eff_hi[eff_hi$Data.Availability=="Yes",])
@@ -328,8 +333,8 @@ confint(fit_rmet)
 # forest plot (effects)
 forest(fit_rmet, slab = paste(eff_rmet$Author, eff_rmet$Year, sep = ", "), xlab="Hedges' g",
        mlab="Summary (Random-Effects)", order="obs")
-text(-3.5, 14.5, "Author(s) and Year",  pos=1)
-text(4.3, 14.5, "Hedges' g [95% CI]", pos=1)
+text(-3.5, 15.45, "Author(s) and Year",  pos=1)
+text(4.3, 15.45, "Hedges' g [95% CI]", pos=1)
 
 # outlier and influential cases check
 inf_rmet <- influence(fit_rmet)
@@ -340,7 +345,7 @@ rstudent(fit_rmet)
 
 # run leave one out analysis
 fit_rmet_leave1 <- leave1out(fit_rmet)
-#write.csv(fit_rmet_leave1, file="/projects/loliver/Systematic_Review/Paper/Tables/fit_rmet_leave1.csv",row.names=F)
+#write.csv(fit_rmet_leave1, file="/projects/loliver/Systematic_Review/Paper/Tables/fit_rmet_leave1_update.csv",row.names=F)
 
 # generate GOSH plot
 #fit_rmet_gosh <- gosh(fit_rmet)
@@ -364,7 +369,7 @@ colSums(eff_rmet[,c("Task.SSD.N","Task.ASD.N")])
 # with pub year as moderator (check)
 fit_rmet_yr <- rma(yi=eff_size, vi=var, mods=Year, data=eff_rmet)
 
-# with pub year and age as moderators (use) - p=.069 for Year (but p=.098 overall)
+# with pub year and age as moderators (use)
 fit_rmet_yrage <- rma(yi=eff_size, vi=var, mods=cbind(Year,age_diff), data=eff_rmet)
 
 # check age as categorical moderator (sig diff yes or no)
@@ -379,6 +384,9 @@ fit_rmet_qa <- rma(yi=eff_size, vi=var, mods=QA.Score, data=eff_rmet)
 
 # exploratory - prop on antipsychotics
 fit_rmet_med <- rma(yi=eff_size, vi=var, mods=Diff.on.Antipsych, data=eff_rmet)
+
+# Exploratory for revision - full-scale IQ
+fit_rmet_IQ <- rma(yi=eff_size, vi=var, mods=IQ_diff, data=eff_rmet[eff_rmet$IQ.Type=="Full-scale",])
 
 
 # sensitivity analyses - data availability
@@ -405,13 +413,13 @@ colSums(eff_rmet[eff_rmet$Author!="Booules-Katri et al."&eff_rmet$Author!="Peppe
 # Overall summary stats for qualitative synthesis
 
 # read in all data extracted
-all_meta_data <- read.csv("/projects/loliver/Systematic_Review/All_Data_2020-02-24.csv")
+all_meta_data <- read.csv("/projects/loliver/Systematic_Review/All_Data_2020-08-05.csv")
 
 # Ns per group (total)
 colSums(all_meta_data[,c("SSD.N","ASD.N")])
 
 # excluding those not in meta
-colSums(all_meta_data[c(1:8,10:12,14:16,18:34),c("SSD.N","ASD.N")])
+colSums(all_meta_data[c(1:8,10:12,14:16,18:36),c("SSD.N","ASD.N")])
 
 # average prop male
 colMeans(all_meta_data[,c("SSD.Prop.Male","ASD.Prop.Male")],na.rm=T)
