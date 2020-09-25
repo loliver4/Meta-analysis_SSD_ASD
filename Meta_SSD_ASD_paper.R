@@ -42,14 +42,17 @@ fit_low <- rma(yi=eff_size, vi=var, data=eff_low, method="REML")
 # get confidence intervals
 confint(fit_low)
 
-# forest plot (effects) # 600 width
-forest(fit_low, slab = paste(eff_low$Author, eff_low$Year, sep = ", "), xlab="Hedges' g",
-         mlab="Summary (Random-Effects)", order="obs")
-text(-3.6, 18.6, "Author(s) and Year",  pos=1)
-text(4.5, 18.6, "Hedges' g [95% CI]", pos=1)
 
-# if want to add Ns to forest plot
-#study_table=eff_low[,c("Author","Task.SSD.N","Task.ASD.N")],table_headers=c("Author","N SSD", "N ASD"))
+# forest plot (effects) 
+forest(fit_low, slab = paste(eff_low$Author, eff_low$Year, sep = ", "), xlab="Hedges' g",
+         mlab="Summary (Random-Effects)", ilab=cbind(eff_low$Task.SSD.N,eff_low$Task.ASD.N), 
+         ilab.xpos=c(-5.3,-3), xlim=c(-13, 8), ylim=c(-2,19.1), alim=c(-1.5,2.5), cex=0.9, order="obs")
+text(-10.2, 18.9, "Author(s) and Year",  pos=1, cex=0.9)
+text(5.25, 18.9, "Hedges' g [95% CI]", pos=1, cex=0.9)
+text(c(-5.3,-3),18.2, c("SSDs N", "ASD N"), cex=0.9)
+text(6.3, -2.1, cex=0.9, bquote(paste("", I^2, " = ", .(formatC(fit_low$I2, digits=1, format="f")), "%")))
+text(-5.9,19.4, "a.                               Emotion Processing", cex=1.2)
+text(c(-5.3,-3), -2.1, c("657", "570"), cex=0.9)
 
 
 # outlier and influential cases check
@@ -83,6 +86,18 @@ forest(fit_low_out, slab = paste(eff_low_out$Author, eff_low_out$Year, sep = ", 
        mlab="Summary (Random-Effects)", order="obs")
 text(-3.35, 17.5, "Author(s) and Year",  pos=1)
 text(4, 17.5, "Hedges' g [95% CI]", pos=1)
+
+# updated forest plot (W 576 H 572)
+forest(fit_low_out, slab = paste(eff_low_out$Author, eff_low_out$Year, sep = ", "), xlab="Hedges' g",
+       mlab="Summary (Random-Effects)", ilab=cbind(eff_low_out$Task.SSD.N,eff_low_out$Task.ASD.N), 
+       ilab.xpos=c(-5.3,-3), xlim=c(-13, 8), ylim=c(-2,18.1), alim=c(-1.5,2.5), cex=0.9, order="obs")
+text(-10.2, 17.9, "Author(s) and Year",  pos=1, cex=0.9)
+text(5.25, 17.9, "Hedges' g [95% CI]", pos=1, cex=0.9)
+text(c(-5.3,-3),17.2, c("SSDs N", "ASD N"), cex=0.9)
+text(6.3, -2.1, cex=0.9, bquote(paste("", I^2, " = ", .(formatC(fit_low_out$I2, digits=1, format="f")), "%")))
+text(-5.6,18.4, "a.                               Emotion Processing", cex=1.2)
+text(c(-5.3,-3), -2.1, c("636", "535"), cex=0.9)
+
 
 # Q-Q plot to check normality
 qqnorm(fit_low_out,label="out",main = "Random-Effects Model")
@@ -153,6 +168,12 @@ fit_low_sens_young_out <-  rma(yi=eff_size, vi=var, data=eff_low_out[eff_low_out
 regtest(fit_low_sens_young_out, model="rma", predictor = "sei")
 colSums(eff_low_out[eff_low_out$Author!="Waris et al.",c("Task.SSD.N","Task.ASD.N")])
 
+# excluding studies with QA scores < 5 (reviewer request)
+fit_low_sens_QA_out <- rma(yi=eff_size, vi=var, data=eff_low_out[eff_low_out$QA.Score>=5,])
+
+regtest(fit_low_sens_QA_out, model="rma", predictor = "sei")
+colSums(eff_low_out[eff_low_out$QA.Score>=5,c("Task.SSD.N","Task.ASD.N")])
+
 
 # higher-level soc cog
 eff_hi <- escalc(measure="SMD", n1i=Task.SSD.N, n2i=Task.ASD.N, m1i=O1.SSD.Mean, m2i=O1.ASD.Mean, sd1i=O1.SSD.SD, 
@@ -187,6 +208,18 @@ forest(fit_hi, slab = paste(eff_hi$Author, eff_hi$Year, sep = ", "), xlab="Hedge
 text(-10.5, 20.8, "Author(s) and Year",  pos=1)
 text(6.75, 20.8, "Hedges' g [95% CI]", pos=1)
 
+# updated forest plot
+forest(fit_hi, slab = paste(eff_hi$Author, eff_hi$Year, sep = ", "), xlab="Hedges' g",
+       mlab="Summary (Random-Effects)", ilab=cbind(eff_hi$Task.SSD.N,eff_hi$Task.ASD.N), 
+       ilab.xpos=c(-9.85,-6.75), xlim=c(-20.75, 9), ylim=c(-2,21.1), cex=0.9, order="obs")
+text(-16.75, 20.9, "Author(s) and Year",  pos=1, cex=0.9)
+text(5.25, 20.9, "Hedges' g [95% CI]", pos=1, cex=0.9)
+text(c(-9.85,-6.75),20.05, c("SSDs N", "ASD N"), cex=0.9)
+text(6.7, -2.1, cex=0.9, bquote(paste("", I^2, " = ", .(formatC(fit_hi$I2, digits=1, format="f")), "%")))
+text(-11.3, 21.4, "b.                                  Theory of Mind", cex=1.2)
+text(c(-9.85,-6.75), -2.1, c("564", "510"), cex=0.9)
+
+
 # outlier and influential cases check
 inf_hi <- influence(fit_hi)
 plot(inf_hi, plotdfb = TRUE)
@@ -200,7 +233,8 @@ fit_hi_leave1 <- leave1out(fit_hi)
 
 # generate GOSH plot - cool visualization for outliers, but takes forever 
 #fit_hi_gosh <- gosh(fit_hi)
-#plot(fit_hi_gosh, out=10)
+plot(fit_hi_gosh, out=10, main="a. Theory of Mind", xlab="Hedges' g", ylab=expression(paste("Between-study heterogeneity I"^"2")),
+     cex.lab=1.2, cex.main=1.4)
 
 # rerun meta-analysis without outlier (study 10, Waris)
 eff_hi_out <- eff_hi[-10,]
@@ -214,6 +248,17 @@ forest(fit_hi_out, slab = paste(eff_hi_out$Author, eff_hi_out$Year, sep = ", "),
        mlab="Summary (Random-Effects)", order="obs")
 text(-3.85, 19.7, "Author(s) and Year",  pos=1)
 text(3.75, 19.7, "Hedges' g [95% CI]", pos=1)
+
+# updated forest plot
+forest(fit_hi_out, slab = paste(eff_hi_out$Author, eff_hi_out$Year, sep = ", "), xlab="Hedges' g",
+       mlab="Summary (Random-Effects)", ilab=cbind(eff_hi_out$Task.SSD.N,eff_hi_out$Task.ASD.N), 
+       ilab.xpos=c(-5.3,-3), xlim=c(-13, 8), ylim=c(-2,20.1), cex=0.9, order="obs")
+text(-10.2, 19.9, "Author(s) and Year",  pos=1, cex=0.9)
+text(5.25, 19.9, "Hedges' g [95% CI]", pos=1, cex=0.9)
+text(c(-5.3,-3), 19.15, c("SSDs N", "ASD N"), cex=0.9)
+text(6.3, -2.1, cex=0.9, bquote(paste("", I^2, " = ", .(formatC(fit_hi_out$I2, digits=1, format="f")), "%")))
+text(-6.3,20.4, "b.                                 Theory of Mind", cex=1.2)
+text(c(-5.3,-3), -2.1, c("555", "495"), cex=0.9)
 
 # Q-Q plot to check normality
 qqnorm(fit_hi_out,label="out",main = "Random-Effects Model")
@@ -303,6 +348,12 @@ fit_hi_sens_young_out <-  rma(yi=eff_size, vi=var, data=eff_hi_out[eff_hi_out$Au
 regtest(fit_hi_sens_young_out, model="rma", predictor = "sei")
 colSums(eff_hi_out[eff_hi_out$Author!="Pilowsky et al."&eff_hi_out$Author!="Tin et al.",c("Task.SSD.N","Task.ASD.N")])
 
+# excluding studies with QA scores < 5 (reviewer request)
+fit_hi_sens_QA_out <- rma(yi=eff_size, vi=var, data=eff_hi_out[eff_hi_out$QA.Score>=5,])
+
+regtest(fit_hi_sens_QA_out, model="rma", predictor = "sei")
+colSums(eff_hi_out[eff_hi_out$QA.Score>=5,c("Task.SSD.N","Task.ASD.N")])
+
 
 # RMET
 eff_rmet <- escalc(measure="SMD", n1i=Task.SSD.N, n2i=Task.ASD.N, m1i=O1.SSD.Mean, m2i=O1.ASD.Mean, sd1i=O1.SSD.SD, 
@@ -335,6 +386,17 @@ forest(fit_rmet, slab = paste(eff_rmet$Author, eff_rmet$Year, sep = ", "), xlab=
        mlab="Summary (Random-Effects)", order="obs")
 text(-3.5, 15.45, "Author(s) and Year",  pos=1)
 text(4.3, 15.45, "Hedges' g [95% CI]", pos=1)
+
+# updated forest plot
+forest(fit_rmet, slab = paste(eff_rmet$Author, eff_rmet$Year, sep = ", "), xlab="Hedges' g",
+       mlab="Summary (Random-Effects)", ilab=cbind(eff_rmet$Task.SSD.N,eff_rmet$Task.ASD.N), 
+       ilab.xpos=c(-5.3,-3), xlim=c(-13, 8), ylim=c(-2,16.1), cex=0.9, order="obs")
+text(-10.2, 15.8, "Author(s) and Year",  pos=1, cex=0.9)
+text(5.25, 15.8, "Hedges' g [95% CI]", pos=1, cex=0.9)
+text(c(-5.3,-3), 15.12, c("SSDs N", "ASD N"), cex=0.9)
+text(6.3, -2.1, cex=0.9, bquote(paste("", I^2, " = ", .(formatC(fit_rmet$I2, digits=1, format="f")), "%")))
+text(-5.25,16.3, "c.             Reading the Mind in the Eyes Test", cex=1.2)
+text(c(-5.3,-3), -2.1, c("408", "449"), cex=0.9)
 
 # outlier and influential cases check
 inf_rmet <- influence(fit_rmet)
@@ -408,6 +470,15 @@ regtest(fit_rmet_sens_SSD, model="rma", predictor = "sei")
 colSums(eff_rmet[eff_rmet$Author!="Booules-Katri et al."&eff_rmet$Author!="Pepper et al.",c("Task.SSD.N","Task.ASD.N")])
 
 # no child and adolescent only studies included
+
+# excluding studies with QA scores < 5 (reviewer request)
+fit_rmet_sens_QA <- rma(yi=eff_size, vi=var, data=eff_rmet[eff_rmet$QA.Score>=5,])
+
+regtest(fit_rmet_sens_QA, model="rma", predictor = "sei")
+colSums(eff_rmet[eff_rmet$QA.Score>=5,c("Task.SSD.N","Task.ASD.N")])
+
+rstudent(fit_rmet_sens_QA)
+leave1out(fit_rmet_sens_QA)
 
 
 # Overall summary stats for qualitative synthesis
